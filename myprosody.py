@@ -9,7 +9,6 @@ from scipy.stats import ttest_ind
 import os
 import pickle
 
-
 def run_praat_script(m, p, script='solution'):
     '''
     m : full path to audio file
@@ -22,6 +21,7 @@ def run_praat_script(m, p, script='solution'):
     elif script == 'MLTRNL':
         sourcerun=p+"/"+"dataset"+"/"+"essen"+"/"+"MLTRNL_fix.praat"
     
+    # sav dir saves textgrid files 
     sav_dir = p+'/dataset'+'/Textgrid'
     if not os.path.exists(sav_dir):
         os.makedirs(sav_dir)
@@ -35,7 +35,8 @@ def run_praat_script(m, p, script='solution'):
         print('run success')
         return objects
     except Exception as e:
-        return f"Error: {str(e)}"
+        print(f"Error: {str(e)}")
+        return None
 
 def run_praat_file(m, p):
     try:
@@ -199,7 +200,7 @@ def mysptotal(m,p):
     dataset=pd.DataFrame({"number_ of_syllables":z5[0,:],"number_of_pauses":z5[1,:],"rate_of_speech":z5[2,:],"articulation_rate":z5[3,:],"speaking_duration":z5[4,:],
                         "original_duration":z5[5,:],"balance":z5[6,:],"f0_mean":z5[7,:],"f0_std":z5[8,:],"f0_median":z5[9,:],"f0_min":z5[10,:],"f0_max":z5[11,:],
                         "f0_quantile25":z5[12,:],"f0_quan75":z5[13,:]})
-    print (dataset.T)
+    # print (dataset.T)
     return dataset.T
 
 def mysppron(m,p):
@@ -306,6 +307,7 @@ def myprosody(m,p):
     result_array = np.empty((0, 27))
     try:
         objects = run_praat_script(m, p, 'MLTRNL')
+        print('object check: ', objects)
         z1=( objects[1]) # This will print the info from the textgrid object, and objects[1] is a parselmouth.Data object with a TextGrid inside
         z3=z1.strip().split()
         z2=np.array([z3])
@@ -380,8 +382,6 @@ def mysplev(m,p):
         for soundi in files:
             print(f"Processing {soundi}")
             objects = run_praat_script(soundi, p, 'MLTRNL') 
-            # objects= run_file(sourcerun, -20, 2, 0.3, "yes", soundi, path, 80, 400, 0.01, capture_output=True)
-            #print (objects[0]) # This will print the info from the sound object, and objects[0] is a parselmouth.Sound object
             z1=( objects[1]) # This will print the info from the textgrid object, and objects[1] is a parselmouth.Data object with a TextGrid inside
             z3=z1.strip().split()
             z2=np.array([z3])
@@ -410,7 +410,7 @@ def mysplev(m,p):
 
         def myspp(bp,bg):
             objects = run_praat_script(m, p, 'solution')
-            print (objects[0]) # This will print the info from the sound object, and objects[0] is a parselmouth.Sound object
+            # print (objects[0]) # This will print the info from the sound object, and objects[0] is a parselmouth.Sound object
             z1=str( objects[1]) # This will print the info from the textgrid object, and objects[1] is a parselmouth.Data object with a TextGrid inside
             z2=z1.strip().split()
             z3=int(z2[13]) # will be the integer number 10

@@ -221,7 +221,7 @@ minpause = 'minimum_pause_duration'
       endfor
    endif
 
-# Save as text file: "'directory$'/'soundname$'.TextGrid"
+Save as text file: "'directory$'/'soundname$'.TextGrid"
 
 # use object ID
 	Read from file... 'soundin$'
@@ -882,7 +882,7 @@ if int<2
 							Insert point... 1 position 'i'
 					endfor
 		endif
-		# Save as text file: "'directory$'/'soundname$'2.TextGrid"
+		Save as text file: "'directory$'/'soundname$'2.TextGrid"
 
 		npausez= npausesz		
 				
