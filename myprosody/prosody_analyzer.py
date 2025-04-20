@@ -31,8 +31,9 @@ class ProsodyAnalyzer:
     - Pronunciation scoring
     """
     
-    def __init__(self, config=None):
+    def __init__(self, config=None, debug=False):
         """Initialize prosody analyzer with configuration"""
+        self.debug = debug
         self.config = config or ProsodyConfig()
         self.preprocessor = AudioPreprocessor()
         self.config.create_output_dirs()
@@ -58,7 +59,12 @@ class ProsodyAnalyzer:
                 shutil.rmtree(audio_temp)
                 
         except Exception as e:
-            print(f"Error during cleanup: {str(e)}")
+            self._debug_print(f"Error during cleanup: {str(e)}")
+
+    def _debug_print(self, message):
+        """Print message only if debug is enabled"""
+        if self.debug:
+            print(message)
 
     def run_praat_script(self, audio_path, script_type='solution'):
         """Run Praat script on audio file"""
@@ -84,8 +90,8 @@ class ProsodyAnalyzer:
                         except OSError:
                             pass
 
-            print(f"Running Praat script: {script_path}")
-            print(f"On audio file: {processed_audio}")
+            self._debug_print(f"Running Praat script: {script_path}")
+            self._debug_print(f"On audio file: {processed_audio}")
             
             # Run the Praat script
             try:
@@ -103,24 +109,24 @@ class ProsodyAnalyzer:
                     capture_output=True,
                 )                
                 if not objects:
-                    print("Praat script returned no objects")
+                    self._debug_print("Praat script returned no objects")
                     return None
                     
                 if len(objects) < 2:
-                    print(f"Unexpected number of objects returned: {len(objects)}")
+                    self._debug_print(f"Unexpected number of objects returned: {len(objects)}")
                     return None
                     
-                print(f"Script execution successful. Number of objects: {len(objects)}")
+                self._debug_print(f"Script execution successful. Number of objects: {len(objects)}")
                 return objects
                 
             except Exception as script_error:
-                print(f"Error executing Praat script: {str(script_error)}")
-                print(f"Script path: {script_path}")
-                print(f"Audio path: {processed_audio}")
+                self._debug_print(f"Error executing Praat script: {str(script_error)}")
+                self._debug_print(f"Script path: {script_path}")
+                self._debug_print(f"Audio path: {processed_audio}")
                 return None
                 
         except Exception as e:
-            print(f"Error in run_praat_script: {str(e)}")
+            self._debug_print(f"Error in run_praat_script: {str(e)}")
             return None
 
     def _get_basic(self, audio_path):
@@ -128,20 +134,20 @@ class ProsodyAnalyzer:
         try:
             objects = self.run_praat_script(audio_path, 'solution')
             if not objects:
-                print("No objects returned from Praat script")
+                self._debug_print("No objects returned from Praat script")
                 return None
 
             try:
                 result_text = str(objects[1])
                 if not result_text.strip():
-                    print("Empty result from Praat script")
+                    self._debug_print("Empty result from Praat script")
                     return None
                     
                 results = result_text.strip().split()
-                print(f"Raw results from Praat: {results}")
+                self._debug_print(f"Raw results from Praat: {results}")
                 
                 if len(results) < 14:
-                    print(f"Insufficient results from Praat (got {len(results)}, expected at least 14)")
+                    self._debug_print(f"Insufficient results from Praat (got {len(results)}, expected at least 14)")
                     return None
 
                 metrics = {}
@@ -175,13 +181,13 @@ class ProsodyAnalyzer:
                 return metrics
                 
             except Exception as parse_error:
-                print(f"Error parsing Praat results: {str(parse_error)}")
+                self._debug_print(f"Error parsing Praat results: {str(parse_error)}")
                 if objects and len(objects) > 1:
-                    print(f"Raw output: {str(objects[1])}")
+                    self._debug_print(f"Raw output: {str(objects[1])}")
                 return None
                 
         except Exception as e:
-            print(f"Error in basic metrics analysis: {str(e)}")
+            self._debug_print(f"Error in basic metrics analysis: {str(e)}")
             return None
 
 
@@ -217,7 +223,7 @@ class ProsodyAnalyzer:
 
             return {'gender': 'Unknown', 'mood': 'Unknown'}
         except Exception as e:
-            print(f"Error in gender/mood analysis: {str(e)}")
+            self._debug_print(f"Error in gender/mood analysis: {str(e)}")
             return None
 
     def _get_pron_score(self, z4):
@@ -227,7 +233,7 @@ class ProsodyAnalyzer:
             score = np.mean(db) * 100 / 10
             return score
         except Exception as e:
-            print(f"Error in pronunciation analysis: {str(e)}")
+            self._debug_print(f"Error in pronunciation analysis: {str(e)}")
             return None
 
     def _get_prosody(self, audio_path):
@@ -235,7 +241,7 @@ class ProsodyAnalyzer:
         try:
             objects = self.run_praat_script(audio_path, 'MLTRNL')
             if not objects:
-                print("No objects returned from get_prosody: Praat script MLTRNL")
+                self._debug_print("No objects returned from get_prosody: Praat script MLTRNL")
                 return None
 
             raw_output = str(objects[1]).strip().split()
@@ -267,7 +273,7 @@ class ProsodyAnalyzer:
                         # 'reference_values': ref_values,
 
                 except Exception as e:
-                    print(f"Error processing feature {display_names[i]}: {str(e)}")
+                    self._debug_print(f"Error processing feature {display_names[i]}: {str(e)}")
                     continue
 
             filter_out = ['n_words', 'n_pause', 'n_long_pause', 'speaking_time', 'f0_25', 'f0_50', 'f0_75', 'f0_std', 'f0_max', 'f0_min']
@@ -276,7 +282,7 @@ class ProsodyAnalyzer:
             return metrics
             
         except Exception as e:
-            print(f"Error in prosody analysis: {str(e)}")
+            self._debug_print(f"Error in prosody analysis: {str(e)}")
             return None
         
     def mysptotal(self, audio_path):
@@ -300,12 +306,12 @@ class ProsodyAnalyzer:
         try:
             basic_metrics = self._get_basic(audio_path)
             if not basic_metrics:
-                print("Error in basic metrics analysis")
+                self._debug_print("Error in basic metrics analysis")
                 basic_metrics = None
 
             prosody = self._get_prosody(audio_path)
             if not prosody:
-                print("Error in prosody analysis")
+                self._debug_print("Error in prosody analysis")
                 prosody = None
 
             results = {
@@ -315,6 +321,6 @@ class ProsodyAnalyzer:
             self.cleanup()
             return results
         except Exception as e:
-            print(f"Error in total analysis: {str(e)}")
+            self._debug_print(f"Error in total analysis: {str(e)}")
             self.cleanup()
             return None 
