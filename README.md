@@ -99,13 +99,6 @@ The package returns two main dictionaries of features: `basic` and `prosody`. He
 - `gender`: speaker gender prediction based on formant stats
 - `mood`: speaker emotional state prediction >..<
 
-
-- `speaking_rate`: Number of words per minute
-- - `avg_pause_dur_per_syll`: Average pause duration per syllable
-- `speaking_wpm`: Words per minute during speech segments
-- `total_wpm`: Words per minute including pauses
-- `articulation_rate`: Number of syllables per second during speech segments (sometimes different than speech_rate_w_pause, both kept for comparison)
-
 ### [prosody] Features
 - `n_detected_vowel`: Number of detected vowels
 - `pct_correct_vowel`: Percentage of correctly pronounced vowels within valid pitch range (ignore syllabic differences)
