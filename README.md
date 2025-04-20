@@ -80,20 +80,7 @@ if result:
 The package returns two main dictionaries of features: `basic` and `prosody`. Here's a detailed description of each feature:
 
 ### [basic] Features
-- `speaking_dur`: Total duration of speech segments (seconds)
-- `total_dur`: Total duration including pauses (seconds)
-- `pct_speaking`: Percentage of time spent speaking vs total duration
-- `n_syllables`: Total number of detected syllables
-- `n_pauses`: Number of pauses detected in speech
-- `speech_rate_w_pause`: Speech rate including pauses (syllables/second)
-- `speech_rate_wo_pause`: Speech rate excluding pauses (syllables/second)
-- `speaking_rate`: Number of words per minute
-- `avg_pause_dur_per_syll`: Average pause duration per syllable
-- `speaking_wpm`: Words per minute during speech segments
-- `total_wpm`: Words per minute including pauses
-- `articulation_rate`: Number of syllables per second during speech segments (sometimes different than speech_rate_w_pause, both kept for comparison)
 
-### [prosody] Features
 - `f0_mean`: Mean fundamental frequency (pitch)
 - `f0_std`: Standard deviation of fundamental frequency
 - `f0_median`: Median fundamental frequency
@@ -101,20 +88,46 @@ The package returns two main dictionaries of features: `basic` and `prosody`. He
 - `f0_max`: Maximum fundamental frequency
 - `f0_q25`: 25th percentile of fundamental frequency
 - `f0_q75`: 75th percentile of fundamental frequency
+- `speaking_dur`: Total duration of speech segments (seconds)
+- `total_dur`: Total duration including pauses (seconds)
+- `pct_speaking`: Percentage of time spent speaking vs total duration
+- `n_syllables`: Total number of detected syllables
+- `n_pauses`: Number of pauses detected in speech
+- `speech_rate_w_pause`: Speech rate including pauses (syllables/second)
+- `speech_rate_wo_pause`: Speech rate excluding pauses (syllables/second)
+- `pron_score`: pronunciation posterior score => calculate percentage of peaks are within valid pitch range
+- `gender`: speaker gender prediction based on formant stats
+- `mood`: speaker emotional state prediction >..<
+
+
+- `speaking_rate`: Number of words per minute
+- - `avg_pause_dur_per_syll`: Average pause duration per syllable
+- `speaking_wpm`: Words per minute during speech segments
+- `total_wpm`: Words per minute including pauses
+- `articulation_rate`: Number of syllables per second during speech segments (sometimes different than speech_rate_w_pause, both kept for comparison)
+
+### [prosody] Features
+- `n_detected_vowel`: Number of detected vowels
+- `pct_correct_vowel`: Percentage of correctly pronounced vowels within valid pitch range (ignore syllabic differences)
+- `n_syllable/n_pause`: Ratio of syllables to pauses
+- `avg_pause_dur_per_syll`: Average pause duration per syllable
+- `speaking_wpm`: Words per minute during speech segments
+- `total_wpm`: Words per minute including pauses
+- `articulation_rate`: Number of syllables per second during speech segments
+- `speaking_rate`: Number of syllables per second including pauses
 - `f0_index`: Composite index of pitch variation based on mean and quantile ratios
 - `formants_index`: Composite index calculated from:
   - Vowel Space Area (VSA) using F1 and F2 measurements
   - F2/F1 ratios for vowel identification
   - Percentage of vowels within expected formant ranges
-- `n_detected_vowel`: Number of detected vowels
-- `pct_correct_vowel`: Percentage of correctly pronounced vowels within valid pitch range (ignore syllabic differences)
 - `f2_f1_mean`: Mean ratio of second to first formant
 - `f2_f1_std`: Standard deviation of formant ratio
 - `intonation_index`: Calculated from:
   - Pitch variation (ins) score based on quartile ratios (q25, q75) and mean ratio (mr)
   - Balance between speaking rate and articulation rate
   - Score ranges from 4-10 based on pitch stability and variation patterns
-- `n_syllable/n_pause`: Ratio of syllables to pauses
+
+    Composite scores: 
 - `TOEFL_Score`: Estimated score (0-30) calculated from:
   - Weighted combination of rhythm (l), intonation (z), fluency (o), pronunciation (qr), articulation (w), and speech rate (r) scores
   - Formula: totalscore = (l*2 + z*4 + o*3 + qr*3 + w*4 + r*4)/20
